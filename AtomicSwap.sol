@@ -9,7 +9,7 @@ contract AtomicSwap {
   
   event contract_locked();
   event secret_revelared();
-  event secret_wrong(bytes20);
+  event secret_wrong(bytes32);
 
   constructor(address _receiver, string _hash, uint _hours) public {
     receiver = _receiver;
@@ -22,7 +22,7 @@ contract AtomicSwap {
     if(isLocked()){
         emit contract_locked();
     } else {
-      bytes20 hash_redeem = ripemd160(fromHex(_secret));
+      bytes32 hash_redeem = sha256(fromHex(_secret));
       if(isValidHash(hash_redeem)){
         emit secret_revelared();
         selfdestruct(receiver);
@@ -75,9 +75,9 @@ contract AtomicSwap {
     return r;
   }
 
-  function isValidHash(bytes20 hash_sended) private view returns (bool) {
+  function isValidHash(bytes32 hash_sended) private view returns (bool) {
     bool r = true;
-    for (uint i=1; i<=20; ++i) {
+    for (uint i=1; i<=32; ++i) {
       if(hash_sended[hash_sended.length - i] != hash[hash.length - i]){
         return false;
       }
@@ -86,5 +86,6 @@ contract AtomicSwap {
   }
 
 }
+
 
 
